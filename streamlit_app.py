@@ -10,10 +10,6 @@ st.set_page_config(
     layout="wide"
 )
 
-# === INTERFAZ PRINCIPAL ===
-st.title("🍷 Wine prediction app")
-st.caption("Ingresa tus datos y predigo la calidad de tu vino")
-
 # --- Menú lateral ---
 opcion_vino = st.sidebar.selectbox(
     "Selecciona el tipo de vino",
@@ -25,6 +21,10 @@ if opcion_vino == "Vino Tinto":
     modelo = joblib.load("mejor_modelo.pkl")
 else:
     modelo = joblib.load("mejor_modelo_white.pkl")
+
+# === INTERFAZ PRINCIPAL ===
+st.title("🍷 Wine prediction app")
+st.caption("Ingresa tus datos y predigo la calidad de tu vino")
 
 # --- Entrada de datos ---
 st.subheader(f"Ingrese características del {opcion_vino.lower()}")
