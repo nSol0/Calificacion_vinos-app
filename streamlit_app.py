@@ -3,7 +3,13 @@ import joblib
 import numpy as np
 import plotly.graph_objects as go
 
-st.title("Predicción de calidad de vinos")
+# === CONFIGURACIÓN DE PÁGINA ===
+st.set_page_config(
+    page_title="Wine Advisor Bot",
+    page_icon="🍷",
+    layout="wide"
+)
+
 
 # --- Menú lateral ---
 opcion_vino = st.sidebar.selectbox(
