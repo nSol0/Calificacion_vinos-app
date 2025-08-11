@@ -1,6 +1,7 @@
 import streamlit as st
 import joblib
 import numpy as np
+import plotly.graph_objects as go
 
 st.title("Predicción de calidad de vinos")
 
@@ -36,5 +37,29 @@ if st.button("Predecir calidad"):
     datos = np.array([[fixed_acidity, volatile_acidity, citric_acid, residual_sugar,
                        chlorides, free_sulfur_dioxide, total_sulfur_dioxide,
                        density, pH, sulphates, alcohol]])
+    
     prediccion = modelo.predict(datos)
-    st.success(f"Calidad estimada: {prediccion[0]:.2f}")
+    calidad = float(prediccion[0])
+
+    st.success(f"Calidad estimada: {calidad:.2f}")
+
+    # --- Gauge chart ---
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=calidad,
+        title={'text': "Calidad del Vino", 'font': {'size': 24}},
+        gauge={
+            'axis': {'range': [0, 10], 'tickwidth': 1, 'tickcolor': "black"},
+            'bar': {'color': "black"},
+            'steps': [
+                {'range': [0, 2], 'color': "red"},
+                {'range': [2, 4], 'color': "orange"},
+                {'range': [4, 6], 'color': "yellow"},
+                {'range': [6, 8], 'color': "lightgreen"},
+                {'range': [8, 10], 'color': "green"}
+            ]
+        }
+    ))
+
+    st.plotly_chart(fig)
+
