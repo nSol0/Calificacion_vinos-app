@@ -23,7 +23,7 @@ else:
     modelo = joblib.load("mejor_modelo_white.pkl")
 
 # === INTERFAZ PRINCIPAL ===
-st.title("🍷 Wine prediction app")
+st.title("🍷 Wine predictor app")
 st.caption("Ingresa tus datos y predigo la calidad de tu vino")
 
 # --- Entrada de datos ---
