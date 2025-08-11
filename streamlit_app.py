@@ -10,6 +10,9 @@ st.set_page_config(
     layout="wide"
 )
 
+# === INTERFAZ PRINCIPAL ===
+st.title("🍷 Wine prediction app")
+st.caption("Ingresa tus datos y predigo la calidad de tu vino")
 
 # --- Menú lateral ---
 opcion_vino = st.sidebar.selectbox(
