@@ -3,46 +3,8 @@ import joblib
 import numpy as np
 import plotly.graph_objects as go
 
-# === CONFIGURACIÓN DE PÁGINA ===
-st.set_page_config(
-    page_title="Wine Advisor Bot",
-    page_icon="🍷",
-    layout="wide"
-)
-
-# --- Menú lateral ---
-opcion_vino = st.sidebar.selectbox(
-    "Selecciona el tipo de vino",
-    ["Vino Tinto", "Vino Blanco"]
-)
-
-# Cargar el modelo según selección
-if opcion_vino == "Vino Tinto":
-    modelo = joblib.load("mejor_modelo.pkl")
-else:
-    modelo = joblib.load("mejor_modelo_white.pkl")
-
-# === INTERFAZ PRINCIPAL ===
-st.title("🍷 Wine predictor app")
-st.caption("Ingresa tus datos y predigo la calidad de tu vino")
-
-# --- Entrada de datos ---
-st.subheader(f"Ingrese características del {opcion_vino.lower()}")
-
-fixed_acidity = st.number_input("Fixed Acidity", value=7.4)
-volatile_acidity = st.number_input("Volatile Acidity", value=0.7)
-citric_acid = st.number_input("Citric Acid", value=0.0)
-residual_sugar = st.number_input("Residual Sugar", value=1.9)
-chlorides = st.number_input("Chlorides", value=0.076)
-free_sulfur_dioxide = st.number_input("Free Sulfur Dioxide", value=11.0)
-total_sulfur_dioxide = st.number_input("Total Sulfur Dioxide", value=34.0)
-density = st.number_input("Density", value=0.9978)
-pH = st.number_input("pH", value=3.51)
-sulphates = st.number_input("Sulphates", value=0.56)
-alcohol = st.number_input("Alcohol", value=9.4)
-
+# === Función para asignar colores ===
 def obtener_color(valor):
-    """Devuelve el color según el rango de valor"""
     if valor < 2:
         return "red"
     elif valor < 4:
@@ -54,28 +16,59 @@ def obtener_color(valor):
     else:
         return "green"
 
+# === Interfaz de selección de vino ===
+st.title("🍷 Predicción de Calidad del Vino")
+opcion_vino = st.radio("Selecciona el tipo de vino:", ("Vino Tinto", "Vino Blanco"))
+
+# Definir error medio según el tipo
+if opcion_vino == "Vino Tinto":
+    modelo = joblib.load("mejor_modelo.pkl")
+    error_medio = 0.49
+else:
+    modelo = joblib.load("mejor_modelo_white.pkl")
+    error_medio = 0.6
+
+# === Entradas del usuario ===
+fixed_acidity = st.number_input("Acidez fija", value=7.0)
+volatile_acidity = st.number_input("Acidez volátil", value=0.27)
+citric_acid = st.number_input("Ácido cítrico", value=0.36)
+residual_sugar = st.number_input("Azúcar residual", value=20.7)
+chlorides = st.number_input("Cloruros", value=0.045)
+free_sulfur_dioxide = st.number_input("SO₂ libre", value=45.0)
+total_sulfur_dioxide = st.number_input("SO₂ total", value=170.0)
+density = st.number_input("Densidad", value=1.0010)
+pH = st.number_input("pH", value=3.0)
+sulphates = st.number_input("Sulfatos", value=0.45)
+alcohol = st.number_input("Alcohol", value=8.8)
+
+# === Botón de predicción ===
 if st.button("Predecir calidad"):
     datos = np.array([[fixed_acidity, volatile_acidity, citric_acid, residual_sugar,
                        chlorides, free_sulfur_dioxide, total_sulfur_dioxide,
                        density, pH, sulphates, alcohol]])
+    
     prediccion = modelo.predict(datos)
-    valor = prediccion[0]
+    valor = float(prediccion[0])
 
-    # Color según rango
+    # Calcular rango con error medio
+    valor_min = max(0, valor - error_medio)
+    valor_max = min(10, valor + error_medio)
+
     color_rango = obtener_color(valor)
 
-    # Mostrar valor con fondo del color correspondiente
+    # Mostrar texto con color
     st.markdown(
         f"<h3 style='text-align:center; color:white; background-color:{color_rango}; "
-        f"padding:10px; border-radius:8px;'>Calidad estimada: {valor:.2f}</h3>",
+        f"padding:10px; border-radius:8px;'>Calidad estimada: {valor:.2f} "
+        f"(rango aprox: {valor_min:.2f} - {valor_max:.2f})</h3>",
         unsafe_allow_html=True
     )
 
-    # Crear gauge chart con barra más amigable
+    # === Gauge básico ===
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=valor,
-        number={'font': {'color': color_rango, 'size': 48}},  # Número con color del rango
+        number={'font': {'color': color_rango, 'size': 48}},
         title={'text': "Calidad del Vino"},
         gauge={
             'axis': {'range': [0, 10]},
@@ -86,7 +79,7 @@ if st.button("Predecir calidad"):
                 {'range': [6, 8], 'color': "lightgreen"},
                 {'range': [8, 10], 'color': "green"},
             ],
-            'bar': {'color': "#00BFFF"}  # Turquesa amigable
+            'bar': {'color': color_rango}
         }
     ))
 
