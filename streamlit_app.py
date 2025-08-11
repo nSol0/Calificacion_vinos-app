@@ -23,10 +23,10 @@ opcion_vino = st.radio("Selecciona el tipo de vino:", ("Vino Tinto", "Vino Blanc
 # Definir error medio según el tipo
 if opcion_vino == "Vino Tinto":
     modelo = joblib.load("mejor_modelo.pkl")
-    error_medio = 0.49
+    error_medio = 0.45
 else:
     modelo = joblib.load("mejor_modelo_white.pkl")
-    error_medio = 0.6
+    error_medio = 0.35
 
 # === Entradas del usuario ===
 fixed_acidity = st.number_input("Acidez fija", value=7.0)
@@ -64,7 +64,7 @@ if st.button("Predecir calidad"):
         unsafe_allow_html=True
     )
 
-    # === Gauge básico ===
+    # === Gauge básico con barra amigable ===
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=valor,
@@ -79,7 +79,7 @@ if st.button("Predecir calidad"):
                 {'range': [6, 8], 'color': "lightgreen"},
                 {'range': [8, 10], 'color': "green"},
             ],
-            'bar': {'color': color_rango}
+            'bar': {'color': "#4B9CD3"}  # Color amigable azul suave
         }
     ))
 
