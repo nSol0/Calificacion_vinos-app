@@ -32,34 +32,55 @@ pH = st.number_input("pH", value=3.51)
 sulphates = st.number_input("Sulphates", value=0.56)
 alcohol = st.number_input("Alcohol", value=9.4)
 
-# Botón para predecir
+def obtener_color(valor):
+    """Devuelve el color según el rango de valor"""
+    if valor < 2:
+        return "red"
+    elif valor < 4:
+        return "orange"
+    elif valor < 6:
+        return "yellow"
+    elif valor < 8:
+        return "lightgreen"
+    else:
+        return "green"
+
 if st.button("Predecir calidad"):
     datos = np.array([[fixed_acidity, volatile_acidity, citric_acid, residual_sugar,
                        chlorides, free_sulfur_dioxide, total_sulfur_dioxide,
                        density, pH, sulphates, alcohol]])
-    
     prediccion = modelo.predict(datos)
-    calidad = float(prediccion[0])
+    valor = prediccion[0]
 
-    st.success(f"Calidad estimada: {calidad:.2f}")
+    # Color según rango
+    color_rango = obtener_color(valor)
 
-    # --- Gauge chart ---
+    # Mostrar valor con fondo del color correspondiente
+    st.markdown(
+        f"<h3 style='text-align:center; color:white; background-color:{color_rango}; "
+        f"padding:10px; border-radius:8px;'>Calidad estimada: {valor:.2f}</h3>",
+        unsafe_allow_html=True
+    )
+
+    # Crear gauge chart con barra más amigable
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
-        value=calidad,
-        title={'text': "Calidad del Vino", 'font': {'size': 24}},
+        value=valor,
+        number={'font': {'color': color_rango, 'size': 48}},  # Número con color del rango
+        title={'text': "Calidad del Vino"},
         gauge={
-            'axis': {'range': [0, 10], 'tickwidth': 1, 'tickcolor': "black"},
-            'bar': {'color': "black"},
+            'axis': {'range': [0, 10]},
             'steps': [
                 {'range': [0, 2], 'color': "red"},
                 {'range': [2, 4], 'color': "orange"},
                 {'range': [4, 6], 'color': "yellow"},
                 {'range': [6, 8], 'color': "lightgreen"},
-                {'range': [8, 10], 'color': "green"}
-            ]
+                {'range': [8, 10], 'color': "green"},
+            ],
+            'bar': {'color': "#00BFFF"}  # Turquesa amigable
         }
     ))
 
     st.plotly_chart(fig)
+
 
