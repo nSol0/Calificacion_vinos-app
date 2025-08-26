@@ -12,3 +12,4 @@
    ```
    $ streamlit run streamlit_app.py
    ```
+link: blank-app-tgcvbjl5hmr.streamlit.app
