@@ -49,7 +49,10 @@ if st.button("Predecir calidad"):
     
     prediccion = modelo.predict(datos)
     valor = float(prediccion[0])
-
+    if valor>10:
+        valor=10
+    elif valor<0:
+        valor=0
     # Calcular rango con error medio
     valor_min = max(0, valor - error_medio)
     valor_max = min(10, valor + error_medio)
