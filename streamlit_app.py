@@ -54,7 +54,7 @@ if st.button("Predecir calidad"):
     elif valor<0:
         valor=0
     # Calcular rango con error medio
-    valor_min = max(0, valor - error_medio)
+    valor_min = min(max(0, valor - error_medio),10)-error_medio
     valor_max = min(10, valor + error_medio)
 
     color_rango = obtener_color(valor)
