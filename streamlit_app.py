@@ -43,23 +43,23 @@ alcohol = st.number_input("Alcohol", value=8.8)
 
 # === Botón de predicción ===
 if st.button("Predecir calidad"):
-    # Asegura forma (1, 11) y tipo float
     datos = np.array([[fixed_acidity, volatile_acidity, citric_acid, residual_sugar,
                        chlorides, free_sulfur_dioxide, total_sulfur_dioxide,
                        density, pH, sulphates, alcohol]], dtype=float)
 
+    # Predicción -> float
     pred_raw = modelo.predict(datos)
-    pred_raw = float(np.ravel(pred_raw)[0]) 
+    pred_raw = float(np.ravel(pred_raw)[0])
 
-    # Clip duro a [0, 10]
-    valor = float(np.clip(pred_raw, 0.0, 10.0))
+    # Forzar valor en rango [0, 10]
+    valor = float(np.clip(pred_raw, 0, 10))
 
-    # Rango con error medio, también recortado a [0, 10]
-    valor_min, valor_max = np.clip([valor - error_medio, valor + error_medio], 0.0, 10.0)
+    # También forzar rango
+    valor_min = float(np.clip(valor - error_medio, 0, 10))
+    valor_max = float(np.clip(valor + error_medio, 0, 10))
 
     color_rango = obtener_color(valor)
 
-    # Texto con fondo de color
     st.markdown(
         f"<h3 style='text-align:center; color:white; background-color:{color_rango}; "
         f"padding:10px; border-radius:8px;'>Calidad estimada: {valor:.2f} "
@@ -67,10 +67,10 @@ if st.button("Predecir calidad"):
         unsafe_allow_html=True
     )
 
-    # === Gauge con barra amigable ===
+    # Gauge (ya con valor limitado)
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
-        value=valor,  # ya viene recortado
+        value=valor,  
         number={'font': {'color': color_rango, 'size': 48}},
         title={'text': "Calidad del Vino"},
         gauge={
@@ -82,7 +82,7 @@ if st.button("Predecir calidad"):
                 {'range': [6, 8], 'color': "lightgreen"},
                 {'range': [8, 10], 'color': "green"},
             ],
-            'bar': {'color': "#4B9CD3"}  # azul suave para la barra
+            'bar': {'color': "#4B9CD3"}
         }
     ))
     st.plotly_chart(fig)
